@@ -99,6 +99,7 @@ An error occurred (InvalidParameterValue) when calling the RunInstances operatio
 ```
 
 Ensure that the role exists and it has the permissions to execute on EC2 instances.
+How to set up an IAM role can be found at [source](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
 
 ### Acknowledgement
 
