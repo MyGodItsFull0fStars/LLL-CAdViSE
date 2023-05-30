@@ -46,6 +46,14 @@ For this either a placement group with the name `lll-cadvice-cluster` has to be 
 The variable `awsSecurityGroup` has to be set to an available security group.
 In case no security group exists, instructions can be found at [Security groups link](https://docs.aws.amazon.com/vpc/latest/userguide/security-groups.html).
 
+##### IAM Role
+
+The value for the variable `awsIAMRole` has to be set.
+The value must be an AWS IAM role that has permissions to access the EC2 service.
+The value to provide in the script is the name of the role that should be used.
+
+How to set up a IAM role can be found at [IAM roles for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
+
 ## Running on AWS Cloud
 
 ```bash
@@ -81,6 +89,16 @@ An error occurred (InvalidParameterValue) when calling the RunInstances operatio
 This error corresponds to AWS not being able to find the security group stored as the value in `awsSecurityGroup`.
 
 A possible solution can be found at [StackOverFlow](https://stackoverflow.com/questions/46604759/an-error-occurred-invalidparametervalue-when-calling-the-runinstances-operatio).
+
+#### Invalid IAM Instance Profile name
+
+This error most likely refers to the `awsIAMRole` variable not being set properly.
+
+```bash
+An error occurred (InvalidParameterValue) when calling the RunInstances operation: Value (<role-name>) for parameter iamInstanceProfile.name is invalid. Invalid IAM Instance Profile name
+```
+
+Ensure that the role exists and it has the permissions to execute on EC2 instances.
 
 ### Acknowledgement
 
