@@ -3,10 +3,10 @@
 players=("dashjs" "hlsjs" "dashjsl2a" "dashjslolp" "hlsjsl2a" "hlsjslolp")
 id=$(date '+%s')
 awsProfile="default"
-placementGroup="lll-cadvise-cluster"
-awsKey=""
-awsIAMRole="SSMEnabled"
-awsSecurityGroup="lll-cadvise-sg"
+placementGroup="gaia"
+awsKey="cbauer"
+awsIAMRole="Gaia-Rol"
+awsSecurityGroup="gaia-sg"
 serverInstanceId=""
 clientInstanceIds=""
 networkConfig=""
