@@ -1,5 +1,28 @@
 [![Client Docker Image CI](https://github.com/cd-athena/LLL-CAdViSE/actions/workflows/clientDockerImage.yml/badge.svg)](https://github.com/cd-athena/LLL-CAdViSE/actions/workflows/clientDockerImage.yml)
 
+## Table of Contents
+
+- [Table of Contents](#table-of-contents)
+- [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
+- [Setup](#setup)
+  - [AWS Credentials](#aws-credentials)
+  - [Run Script Variable](#run-script-variable)
+    - [AWS Key](#aws-key)
+    - [Placement Group](#placement-group)
+    - [Security Group](#security-group)
+    - [IAM Role](#iam-role)
+- [Running on AWS Cloud](#running-on-aws-cloud)
+  - [Script Flags](#script-flags)
+    - [`--players`](#--players)
+    - [`--shaper`](#--shaper)
+    - [`--awsKey`](#--awskey)
+    - [`--withQoE`](#--withqoe)
+  - [Troubleshoot](#troubleshoot)
+    - [Placement Group Unknown](#placement-group-unknown)
+    - [Value `groupId` is invalid](#value-groupid-is-invalid)
+    - [Invalid IAM Instance Profile name](#invalid-iam-instance-profile-name)
+  - [Acknowledgement](#acknowledgement)
+
 ## Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework
 
 This testbed is based on [CAdViSE](https://github.com/cd-athena/CAdViSE).
@@ -18,35 +41,35 @@ This testbed is based on [CAdViSE](https://github.com/cd-athena/CAdViSE).
 - QoE calculation using ITU-T P.1203 (mode 1)
 - Evaluates various significant metrics (stallsDuration, startUpDelay, seekedDuration, qualitySwitches, Bitrate, Latency, PlaybackRate)
 
-### Setup
+## Setup
 
 This section contains setup steps that are to be done before executing the run-script on the AWS Cloud.
 
-#### AWS Credentials
+### AWS Credentials
 
 As a first step, it is required that the AWS credentials are configured on the EC2 instance.
 The steps to configure the AWS credentials can be found in [Configuration and Credential File Settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
-#### Run Script Variable
+### Run Script Variable
 
 Some variables are hard-coded at the beginning of the `run.sh` script and need to be changed according to the AWS configuration.
 
-##### AWS Key
+#### AWS Key
 
 The AWS key corresponds to the name of a generated and registered `ssh` key.
 The authorised keys are found in an AWS instance in the file `authorized_keys` at `$HOME/.ssh/`.
 
-##### Placement Group
+#### Placement Group
 
 The variable `placementGroup` has to be set according to the AWS configuration.
 For this either a placement group with the name `lll-cadvice-cluster` has to be created inside of AWS, or the name of an existing placement group has to be set as the variable value.
 
-##### Security Group
+#### Security Group
 
 The variable `awsSecurityGroup` has to be set to an available security group.
 In case no security group exists, instructions can be found at [Security groups link](https://docs.aws.amazon.com/vpc/latest/userguide/security-groups.html).
 
-##### IAM Role
+#### IAM Role
 
 The value for the variable `awsIAMRole` has to be set.
 The value must be an AWS IAM role that has permissions to access the EC2 service.
