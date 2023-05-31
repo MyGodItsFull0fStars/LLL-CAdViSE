@@ -133,11 +133,11 @@ The `--players` flag defines the streaming media players that will be used for t
 
 Currently supported streaming media players are:
 
-- `dashjs`,
-- `hlsjs`,
-- `dashjslolp`,
-- `hlsjsl2a`,
-- `hlsjslolp`.
+- `dashjs`
+- `hlsjs`
+- `dashjslolp`
+- `hlsjsl2a`
+- `hlsjslolp`
 
 ## Troubleshoot
 
