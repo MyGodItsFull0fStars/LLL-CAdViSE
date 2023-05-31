@@ -13,10 +13,14 @@
       - [IAM Role](#iam-role)
   - [Running on AWS Cloud](#running-on-aws-cloud)
     - [Script Flags](#script-flags)
-      - [`--players`](#--players)
       - [`--shaper`](#--shaper)
-      - [`--awsKey`](#--awskey)
       - [`--withQoE`](#--withqoe)
+      - [`--cluster`](#--cluster)
+      - [`--awsProfile`](#--awsprofile)
+      - [`--awsKey`](#--awskey)
+      - [`awsIAMRole`](#awsiamrole)
+      - [`--awsSecurityGroup`](#--awssecuritygroup)
+      - [`--players`](#--players)
   - [Troubleshoot](#troubleshoot)
     - [Placement Group Unknown](#placement-group-unknown)
     - [Value `groupId` is invalid](#value-groupid-is-invalid)
@@ -79,23 +83,42 @@ How to set up a IAM role can be found at [IAM roles for Amazon EC2](https://docs
 
 ## Running on AWS Cloud
 
+The following command executes the `run.sh` script with the given flags.
+
 ```bash
 ./run.sh --players 5xdashjs 2xhlsjs 3xdashjsl2a --shaper network/network0.json --awsKey [YOUR-KEY] --withQoE
 ```
 
 ### Script Flags
 
-#### `--players`
-
 #### `--shaper`
+
+The value provided to `--shaper` defines the network behaviour over time.
+Numerous network shapes and scenarios can be found at `network/`.
+
+The value `network/network0.json` loads a simple network shape for an initial spin-up of LLL-CAdViSE.
+
+#### `--withQoE`
+
+#### `--cluster`
+
+#### `--awsProfile`
 
 #### `--awsKey`
 
 The `--awsKey` variable corresponds to the generated ssh key name found in `$HOME/.ssh/authorized_keys` that has the pattern `ssh-<key-gen-algorithm>` `<aws-key>` `<key-name>`. As a flag, the `<key-name>` part has to be provided.
 
-#### `--withQoE`
+The value for the flag has either to be set in the `run.sh` script or provided when executing it with the `awsKey` flag.
+
+#### `awsIAMRole`
+
+#### `--awsSecurityGroup`
+
+#### `--players`
 
 ## Troubleshoot
+
+This section covers common errors encountered when executing LLL-CAdViSE.
 
 ### Placement Group Unknown
 
