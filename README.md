@@ -1,8 +1,5 @@
 [![Client Docker Image CI](https://github.com/cd-athena/LLL-CAdViSE/actions/workflows/clientDockerImage.yml/badge.svg)](https://github.com/cd-athena/LLL-CAdViSE/actions/workflows/clientDockerImage.yml)
 
-## Table of Contents
-
-- [Table of Contents](#table-of-contents)
 - [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
 - [Setup](#setup)
   - [AWS Credentials](#aws-credentials)
