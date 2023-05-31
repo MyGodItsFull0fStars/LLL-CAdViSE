@@ -14,11 +14,11 @@
     - [`--shaper`](#--shaper)
     - [`--awsKey`](#--awskey)
     - [`--withQoE`](#--withqoe)
-  - [Troubleshoot](#troubleshoot)
-    - [Placement Group Unknown](#placement-group-unknown)
-    - [Value `groupId` is invalid](#value-groupid-is-invalid)
-    - [Invalid IAM Instance Profile name](#invalid-iam-instance-profile-name)
-  - [Acknowledgement](#acknowledgement)
+- [Troubleshoot](#troubleshoot)
+  - [Placement Group Unknown](#placement-group-unknown)
+  - [Value `groupId` is invalid](#value-groupid-is-invalid)
+  - [Invalid IAM Instance Profile name](#invalid-iam-instance-profile-name)
+- [Acknowledgement](#acknowledgement)
 
 ## Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework
 
@@ -92,15 +92,15 @@ The `--awsKey` variable corresponds to the generated ssh key name found in `$HOM
 
 #### `--withQoE`
 
-### Troubleshoot
+## Troubleshoot
 
-#### Placement Group Unknown
+### Placement Group Unknown
 
 If the error `An error occurred (InvalidPlacementGroup.Unknown) when calling the RunInstances operation: The placement group 'lll-cadvise-cluster' is unknown.` is encountered, the value for the variable `placementGroup` needs to be changed according to one of the defined placement groups configured for AWS.
 
 Another solution is to create a placement group with the name `lll-cadvice-cluster` inside of AWS.
 
-#### Value `groupId` is invalid
+### Value `groupId` is invalid
 
 ```bash
 An error occurred (InvalidParameterValue) when calling the RunInstances operation: Value () for parameter groupId is invalid. The value cannot be empty
@@ -110,7 +110,7 @@ This error corresponds to AWS not being able to find the security group stored a
 
 A possible solution can be found at [StackOverFlow](https://stackoverflow.com/questions/46604759/an-error-occurred-invalidparametervalue-when-calling-the-runinstances-operatio).
 
-#### Invalid IAM Instance Profile name
+### Invalid IAM Instance Profile name
 
 This error most likely refers to the `awsIAMRole` variable not being set properly.
 
@@ -123,7 +123,7 @@ An error occurred (InvalidParameterValue) when calling the RunInstances operatio
 
 How to set up an IAM role can be found at [source](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
 
-### Acknowledgement
+## Acknowledgement
 
 1. Please, include the link to this repository
 2. And cite the following publication:
