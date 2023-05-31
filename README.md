@@ -18,7 +18,7 @@
       - [`--cluster`](#--cluster)
       - [`--awsProfile`](#--awsprofile)
       - [`--awsKey`](#--awskey)
-      - [`awsIAMRole`](#awsiamrole)
+      - [`--awsIAMRole`](#--awsiamrole)
       - [`--awsSecurityGroup`](#--awssecuritygroup)
       - [`--players`](#--players)
   - [Troubleshoot](#troubleshoot)
@@ -100,9 +100,17 @@ The value `network/network0.json` loads a simple network shape for an initial sp
 
 #### `--withQoE`
 
+This flag is a `boolean` type and if the flag is added in the CLI execution, it is set to true.
+
 #### `--cluster`
 
+The flag `--cluster` defines the placement group used for the experiment.
+For further informations regarding placement groups see [Placement Group](#placement-group).
+
 #### `--awsProfile`
+
+The flag `--awsProfile` defines the profile used for the experiment.
+The default value is `"default"`.
 
 #### `--awsKey`
 
@@ -110,11 +118,26 @@ The `--awsKey` variable corresponds to the generated ssh key name found in `$HOM
 
 The value for the flag has either to be set in the `run.sh` script or provided when executing it with the `awsKey` flag.
 
-#### `awsIAMRole`
+#### `--awsIAMRole`
+
+The `--awsIAMRole` flag defines the role used for the experiment.
+For further information see [IAM Role](#iam-role).
 
 #### `--awsSecurityGroup`
 
+The `--awsSecurityGroup` flag defines the security group used for the experiment (see [Security Group](#security-group)).
+
 #### `--players`
+
+The `--players` flag defines the streaming media players that will be used for the experiment.
+
+Currently supported streaming media players are:
+
+- `dashjs`,
+- `hlsjs`,
+- `dashjslolp`,
+- `hlsjsl2a`,
+- `hlsjslolp`.
 
 ## Troubleshoot
 
