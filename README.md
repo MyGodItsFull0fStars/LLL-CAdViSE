@@ -5,6 +5,7 @@
 - [LLL-CAdViSE](#lll-cadvise)
   - [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
   - [Setup](#setup)
+    - [Installing JQuery](#installing-jquery)
     - [AWS Credentials](#aws-credentials)
     - [Run Script Variable](#run-script-variable)
       - [AWS Key](#aws-key)
@@ -25,6 +26,8 @@
     - [Placement Group Unknown](#placement-group-unknown)
     - [Value `groupId` is invalid](#value-groupid-is-invalid)
     - [Invalid IAM Instance Profile name](#invalid-iam-instance-profile-name)
+    - [VcpuLimitExceeded](#vcpulimitexceeded)
+    - [Cluster Placement Not Supported by Instance Type](#cluster-placement-not-supported-by-instance-type)
   - [Acknowledgement](#acknowledgement)
 
 ## Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework
@@ -48,6 +51,16 @@ This testbed is based on [CAdViSE](https://github.com/cd-athena/CAdViSE).
 ## Setup
 
 This section contains setup steps that are to be done before executing the run-script on the AWS Cloud.
+
+### Installing JQuery
+
+The JQuery tool has to be installed to be able to use LLL-CAdViSE on an EC2 instance.
+
+This can be done by executing the following command on the EC2 instance:
+
+```bash
+sudo yum install jq
+```
 
 ### AWS Credentials
 
@@ -171,6 +184,29 @@ An error occurred (InvalidParameterValue) when calling the RunInstances operatio
 2. Check if the role has permissions to execute on EC2 instances.
 
 How to set up an IAM role can be found at [source](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
+
+### VcpuLimitExceeded
+
+A `VcpuLimitExceeded` error is likely to be encountered if the current client/server instances are exceeding the defined limits of your AWS plan.
+
+```bash
+An error occurred (VcpuLimitExceeded) when calling the RunInstances operation: You have requested more vCPU capacity than your current vCPU limit of <x> allows for the instance bucket that the specified instance type belongs to. Please visit http://aws.amazon.com/contact-us/ec2-request to request an adjustment to this limit.
+```
+
+A possible fix for this is either to request a higher vCPU capacity as is further explained in [Solve: You have requested more vCPU capacity than your current vCPU limit](https://towardsthecloud.com/amazon-ec2-requested-more-vcpu-capacity).
+
+Another possible solution is to use smaller instance sizes as shown in the product detail section of [Amazon EC2 M5 Instances](https://aws.amazon.com/ec2/instance-types/m5/).
+
+### Cluster Placement Not Supported by Instance Type
+
+```bash
+An error occurred (InvalidParameterCombination) when calling the RunInstances operation: Cluster placement groups are not supported by the 't2.micro' instance type. Specify a supported instance type or change the placement group strategy, and try again.
+```
+
+This error is due to the chosen instances for the script variables `clientInstanceType` or `serverInstanceType` not being supported.
+Supported instance types can be found at [Amazon EC2 M5 Instances](https://aws.amazon.com/ec2/instance-types/m5/).
+
+Other solutions to this problem can be found at [Troubleshoot Link](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ts-as-instancelaunchfailure.html).
 
 ## Acknowledgement
 
