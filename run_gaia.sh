@@ -45,6 +45,9 @@ cleanExit() {
   exit "$1"
 }
 
+# Register cleanExit function to execute on SIGINT
+trap cleanExit SIGINT
+
 showDebugMessage "Debug Mode ON"
 
 argumentIndex=0
@@ -238,7 +241,7 @@ for publicIp in "${clientPublicIps[@]}"; do
   showMessage "Waiting for client network interface to be reachable [${players[playerIndex]}]"
   while ! nc -w5 -z "$publicIp" 22; do
     sleep 1
-    showDebugMessage "Still waiting..."
+    showDebugMessage "Still waiting for client network interface to be reachable"
   done
 
   showMessage "Injecting scripts and configurations into client instance"
@@ -250,6 +253,7 @@ done
 showMessage "Waiting for server network interface to be reachable"
 while ! nc -w5 -z "$serverPublicIp" 22; do
   sleep 1
+  showDebugMessage "Still waiting for server network interface to be reachable"
 done
 
 showMessage "Injecting scripts and configurations into server instance"
