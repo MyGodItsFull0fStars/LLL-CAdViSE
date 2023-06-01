@@ -6,6 +6,7 @@
   - [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
   - [Setup](#setup)
     - [Installing JQuery](#installing-jquery)
+    - [Installing netcat](#installing-netcat)
     - [AWS Credentials](#aws-credentials)
     - [Run Script Variable](#run-script-variable)
       - [AWS Key](#aws-key)
@@ -62,6 +63,16 @@ This can be done by executing the following command on the EC2 instance:
 sudo yum install jq
 ```
 
+### Installing netcat
+
+Netcat has to be installed in order to check if the client interfaces are reachable by the server in the experiment.
+
+Netcat can be installed by executing the following command on the EC2 instance:
+
+```bash
+sudo yum install nc
+```
+
 ### AWS Credentials
 
 As a first step, it is required that the AWS credentials are configured on the EC2 instance.
@@ -79,7 +90,7 @@ The authorised keys are found in an AWS instance in the file `authorized_keys` a
 #### Placement Group
 
 The variable `placementGroup` has to be set according to the AWS configuration.
-For this either a placement group with the name `lll-cadvice-cluster` has to be created inside of AWS, or the name of an existing placement group has to be set as the variable value.
+For this either a placement group with the name `lll-cadvise-cluster` has to be created inside of AWS, or the name of an existing placement group has to be set as the variable value.
 
 #### Security Group
 
