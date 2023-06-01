@@ -10,10 +10,10 @@ awsSecurityGroup="gaia-sg"
 serverInstanceId=""
 clientInstanceIds=""
 networkConfig=""
-clientInstancesType="m5ad.2xlarge"
-serverInstancesType="m5ad.12xlarge"
-# clientInstancesType="m5ad.large"
-# serverInstancesType="m5ad.large"
+# clientInstancesType="m5ad.2xlarge"
+# serverInstancesType="m5ad.12xlarge"
+clientInstancesType="m5ad.large"
+serverInstancesType="m5ad.large"
 instanceRegion="eu-central-1"
 instanceAvailabilityZone="eu-central-1b"
 clientWarmupTime=1 #s
@@ -46,15 +46,15 @@ cleanExit() {
   rm -rf "$id"
   exit "$1"
 }
-trapCleanup() {
-  showMessage "Killing EC2 instances and clean ups"
-  aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
-  rm -rf "$id"
-  exit 1
-}
+# trapCleanup() {
+#   showMessage "Killing EC2 instances and clean ups"
+#   aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
+#   rm -rf "$id"
+#   exit 1
+# }
 
 # Register cleanExit function to execute on SIGINT
-trap trapCleanup SIGINT
+trap cleanExit 1 SIGINT
 
 showDebugMessage "Debug Mode ON"
 
@@ -66,7 +66,7 @@ for argument in "$@"; do
       nextArgumentIndex=$((argumentIndex + 2))
       networkConfigFileName="${!nextArgumentIndex}"
       networkConfig=$(cat $networkConfigFileName) || showError "Could not load the network config file"
-      shaperDurations=($(echo "$networkConfig" | jq '.[].duration'))
+      shaperDurations=("$(echo "$networkConfig" | jq '.[].duration')")
       serverIngresses=($(echo "$networkConfig" | jq '.[].serverIngress'))
       serverEgresses=($(echo "$networkConfig" | jq '.[].serverEgress'))
       serverLatencies=($(echo "$networkConfig" | jq '.[].serverLatency'))
