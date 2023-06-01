@@ -10,8 +10,10 @@ awsSecurityGroup="gaia-sg"
 serverInstanceId=""
 clientInstanceIds=""
 networkConfig=""
-clientInstancesType="m5ad.large"
-serverInstancesType="m5ad.large"
+clientInstancesType="m5ad.2xlarge"
+serverInstancesType="m5ad.12xlarge"
+# clientInstancesType="m5ad.large"
+# serverInstancesType="m5ad.large"
 instanceRegion="eu-central-1"
 instanceAvailabilityZone="eu-central-1b"
 clientWarmupTime=1 #s
@@ -173,11 +175,11 @@ aws ec2 run-instances \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=lll-cadvise-client-$id}]" \
   --profile $awsProfile >"$id/instances.json" || showError "Failed to run the aws command. Check your aws credentials."
 
-showDebugMessage "Finished spinning up client EC2 instance(s)"
 
 clientInstanceIds=$(jq -r '.Instances[].InstanceId' <"$id/instances.json")
 printf '%s ' "${clientInstanceIds[@]}"
 printf "\n"
+showDebugMessage "Finished spinning up client EC2 instance(s)"
 
 showMessage "Waiting for instances to be in running state"
 stateCodes=0
@@ -196,13 +198,15 @@ serverPublicIp=($(aws ec2 describe-instances --instance-ids $serverInstanceId --
 serverPrivateIp=$(jq -r '.Instances[].PrivateIpAddress' <"$id/instance.json")
 configSkeleton=$(cat configSkeleton.json)
 
+showDebugMessage "Show first client IP: ${clientPublicIps[0]}"
+
 ((durationOfExperiment += clientWarmupTime)) # warm up client
 config="${configSkeleton/--id--/$id}"
 config="${config/--serverIp--/$serverPrivateIp}"
 config="${config/--QoECalc--/$QoECalc}"
 config="${config/--experimentDuration--/$durationOfExperiment}"
 
-showDebugMessage "Shaping Network"
+showDebugMessage "Start shaping network"
 
 shaperIndex=0
 networkConfig="{
@@ -231,6 +235,8 @@ while [ $shaperIndex -lt "${#shaperDurations[@]}" ]; do
 done
 networkConfig="[${networkConfig}]"
 config="${config/\"--shapes--\"/$networkConfig}"
+
+showDebugMessage "Shaping network done"
 
 playerIndex=0
 for publicIp in "${clientPublicIps[@]}"; do
