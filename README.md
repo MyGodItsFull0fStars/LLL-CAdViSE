@@ -4,9 +4,10 @@
 
 - [LLL-CAdViSE](#lll-cadvise)
   - [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
-  - [Setup](#setup)
+  - [CLI Setup](#cli-setup)
     - [Installing JQuery](#installing-jquery)
     - [Installing netcat](#installing-netcat)
+  - [AWS Setup](#aws-setup)
     - [AWS Credentials](#aws-credentials)
     - [Run Script Variable](#run-script-variable)
       - [AWS Key](#aws-key)
@@ -29,6 +30,7 @@
     - [Invalid IAM Instance Profile name](#invalid-iam-instance-profile-name)
     - [VcpuLimitExceeded](#vcpulimitexceeded)
     - [Cluster Placement Not Supported by Instance Type](#cluster-placement-not-supported-by-instance-type)
+    - [Stuck in Instance Network Reachability Loop](#stuck-in-instance-network-reachability-loop)
   - [Acknowledgement](#acknowledgement)
 
 ## Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework
@@ -49,7 +51,7 @@ This testbed is based on [CAdViSE](https://github.com/cd-athena/CAdViSE).
 - QoE calculation using ITU-T P.1203 (mode 1)
 - Evaluates various significant metrics (stallsDuration, startUpDelay, seekedDuration, qualitySwitches, Bitrate, Latency, PlaybackRate)
 
-## Setup
+## CLI Setup
 
 This section contains setup steps that are to be done before executing the run-script on the AWS Cloud.
 
@@ -73,9 +75,13 @@ Netcat can be installed by executing the following command on the EC2 instance:
 sudo yum install nc
 ```
 
+## AWS Setup
+
+This section contains steps that are required to be done before the experiments can be run with LLL-CAdViSE.
+
 ### AWS Credentials
 
-As a first step, it is required that the AWS credentials are configured on the EC2 instance.
+In order for running the experiments with LLL-CAdViSE, it is required that the AWS credentials are configured on the EC2 instance.
 The steps to configure the AWS credentials can be found in [Configuration and Credential File Settings](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
 
 ### Run Script Variable
@@ -171,7 +177,7 @@ This section covers common errors encountered when executing LLL-CAdViSE.
 
 If the error `An error occurred (InvalidPlacementGroup.Unknown) when calling the RunInstances operation: The placement group 'lll-cadvise-cluster' is unknown.` is encountered, the value for the variable `placementGroup` needs to be changed according to one of the defined placement groups configured for AWS.
 
-Another solution is to create a placement group with the name `lll-cadvice-cluster` inside of AWS.
+Another solution is to create a placement group with the name `lll-cadvise-cluster` inside of AWS.
 
 ### Value `groupId` is invalid
 
@@ -218,6 +224,11 @@ This error is due to the chosen instances for the script variables `clientInstan
 Supported instance types can be found at [Amazon EC2 M5 Instances](https://aws.amazon.com/ec2/instance-types/m5/).
 
 Other solutions to this problem can be found at [Troubleshoot Link](https://docs.aws.amazon.com/autoscaling/ec2/userguide/ts-as-instancelaunchfailure.html).
+
+### Stuck in Instance Network Reachability Loop
+
+If the script gets stuck when waiting for an EC2 instance network interface being reachable, the cause is likely a misconfiguration in the AWS security group of inbound rules.
+A possible solution can be found at [Fix Not Being Able to Ping EC2](https://arcadian.cloud/aws/2022/07/01/4-reasons-you-cannot-ping-your-aws-ec2-instance-and-how-to-fix-them/).
 
 ## Acknowledgement
 
