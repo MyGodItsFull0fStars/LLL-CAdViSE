@@ -16,14 +16,6 @@
       - [IAM Role](#iam-role)
   - [Running on AWS Cloud](#running-on-aws-cloud)
     - [Script Flags](#script-flags)
-      - [`--shaper`](#--shaper)
-      - [`--withQoE`](#--withqoe)
-      - [`--cluster`](#--cluster)
-      - [`--awsProfile`](#--awsprofile)
-      - [`--awsKey`](#--awskey)
-      - [`--awsIAMRole`](#--awsiamrole)
-      - [`--awsSecurityGroup`](#--awssecuritygroup)
-      - [`--players`](#--players)
   - [Troubleshoot](#troubleshoot)
     - [Placement Group Unknown](#placement-group-unknown)
     - [Value `groupId` is invalid](#value-groupid-is-invalid)
@@ -31,6 +23,7 @@
     - [VcpuLimitExceeded](#vcpulimitexceeded)
     - [Cluster Placement Not Supported by Instance Type](#cluster-placement-not-supported-by-instance-type)
     - [Stuck in Instance Network Reachability Loop](#stuck-in-instance-network-reachability-loop)
+    - [Injecting Scripts - Identity File Not Accessible](#injecting-scripts---identity-file-not-accessible)
   - [Acknowledgement](#acknowledgement)
 
 ## Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework
@@ -119,55 +112,46 @@ The following command executes the `run.sh` script with the given flags.
 ./run.sh --players 5xdashjs 2xhlsjs 3xdashjsl2a --shaper network/network0.json --awsKey [YOUR-KEY] --withQoE
 ```
 
-### Script Flags
+### Run Script Flags
 
-#### `--shaper`
+- `--shaper`
 
-The value provided to `--shaper` defines the network behaviour over time.
-Numerous network shapes and scenarios can be found at `network/`.
+  - The value provided to `--shaper` defines the network behaviour over time. Numerous network shapes and scenarios can be found at `network/`.
+  - The value `network/network0.json` loads a simple network shape for an initial spin-up of LLL-CAdViSE.
+- `--withQoE`
 
-The value `network/network0.json` loads a simple network shape for an initial spin-up of LLL-CAdViSE.
+  - This flag is a `boolean` type and if the flag is added in the CLI execution, it is set to true.
+- `--cluster`
 
-#### `--withQoE`
+  - The flag `--cluster` defines the placement group used for the experiment.
+  - For further informations regarding placement groups see [Placement Group](#placement-group).
+- `--awsProfile`
 
-This flag is a `boolean` type and if the flag is added in the CLI execution, it is set to true.
+  - The flag `--awsProfile` defines the profile used for the experiment.
+  - The default value is `"default"`.
+- `--awsKey`
 
-#### `--cluster`
+  - The `--awsKey` variable corresponds to the generated ssh key name found in `$HOME/.ssh/authorized_keys` that has the pattern `ssh-<key-gen-algorithm>` `<aws-key>` `<key-name>`. As a flag, the `<key-name>` part has to be provided.
+  - The value for the flag has either to be set in the `run.sh` script or provided when executing it with the `awsKey` flag.
+- `--awsIAMRole`
 
-The flag `--cluster` defines the placement group used for the experiment.
-For further informations regarding placement groups see [Placement Group](#placement-group).
+  - The `--awsIAMRole` flag defines the role used for the experiment.
+  - For further information see [IAM Role](#iam-role).
+- `--awsSecurityGroup`
 
-#### `--awsProfile`
+  - The `--awsSecurityGroup` flag defines the security group used for the experiment (see [Security Group](#security-group)).
+- `--players`
 
-The flag `--awsProfile` defines the profile used for the experiment.
-The default value is `"default"`.
+  - The `--players` flag defines the streaming media players that will be used for the experiment.
+  - Currently supported streaming media players are:
 
-#### `--awsKey`
-
-The `--awsKey` variable corresponds to the generated ssh key name found in `$HOME/.ssh/authorized_keys` that has the pattern `ssh-<key-gen-algorithm>` `<aws-key>` `<key-name>`. As a flag, the `<key-name>` part has to be provided.
-
-The value for the flag has either to be set in the `run.sh` script or provided when executing it with the `awsKey` flag.
-
-#### `--awsIAMRole`
-
-The `--awsIAMRole` flag defines the role used for the experiment.
-For further information see [IAM Role](#iam-role).
-
-#### `--awsSecurityGroup`
-
-The `--awsSecurityGroup` flag defines the security group used for the experiment (see [Security Group](#security-group)).
-
-#### `--players`
-
-The `--players` flag defines the streaming media players that will be used for the experiment.
-
-Currently supported streaming media players are:
-
-- `dashjs`
-- `hlsjs`
-- `dashjslolp`
-- `hlsjsl2a`
-- `hlsjslolp`
+    - `dashjs`
+    - `hlsjs`
+    - `dashjslolp`
+    - `hlsjsl2a`
+    - `hlsjslolp`
+  - The number of times a player should be used in the experiment is defined by a prefix of $Nx$ before the player, where $N$ denotes the number of occurrences.
+  - For example `4xdashjs` will result in `dashjs` being executed 4 times in the experiment.
 
 ## Troubleshoot
 
@@ -229,6 +213,10 @@ Other solutions to this problem can be found at [Troubleshoot Link](https://docs
 
 If the script gets stuck when waiting for an EC2 instance network interface being reachable, the cause is likely a misconfiguration in the AWS security group of inbound rules.
 A possible solution can be found at [Fix Not Being Able to Ping EC2](https://arcadian.cloud/aws/2022/07/01/4-reasons-you-cannot-ping-your-aws-ec2-instance-and-how-to-fix-them/).
+
+### Injecting Scripts - Identity File Not Accessible
+
+If the error `Warning: Identity file <file-name>.pem not accessible: No such file or directory.` is encountered, this is due to the `.pem` private key being required to be included into the root directory of the LLL-CAdViSE repository.
 
 ## Acknowledgement
 
