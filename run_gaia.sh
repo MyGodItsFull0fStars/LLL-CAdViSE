@@ -11,11 +11,13 @@ serverInstanceId=""
 clientInstanceIds=""
 networkConfig=""
 clientInstancesType="m5ad.large"
-serverInstancesType="m5ad.2xlarge"
+serverInstancesType="m5ad.large"
 instanceRegion="eu-central-1"
 instanceAvailabilityZone="eu-central-1b"
 clientWarmupTime=1 #s
 QoECalc=0
+
+debug=false
 
 showError() {
   now=$(date -u +"%H:%M:%S")
@@ -28,12 +30,22 @@ showMessage() {
   printf "\n\e[1;36m>>> [INFO %s] %s\e[0m\n" "$now" "$1"
 }
 
+showDebugMessage() {
+  if [ "$debug" == true ]; then
+    message="$1"
+    now=$(date -u +"%H:%M:%S")
+    printf "\n\e[1;36m>>> [DEBUG %s] %s\e[0m\n" "$now" "$message"
+  fi
+}
+
 cleanExit() {
   showMessage "Killing EC2 instances and clean ups"
   aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
   rm -rf "$id"
-  exit $1
+  exit "$1"
 }
+
+showDebugMessage "Debug Mode ON"
 
 argumentIndex=0
 for argument in "$@"; do
@@ -50,6 +62,9 @@ for argument in "$@"; do
       clientIngresses=($(echo "$networkConfig" | jq '.[].clientIngress'))
       clientEgresses=($(echo "$networkConfig" | jq '.[].clientEgress'))
       clientLatencies=($(echo "$networkConfig" | jq '.[].clientLatency'))
+      ;;
+    "--debug")
+      debug=true
       ;;
     "--withQoE")
       QoECalc=1
@@ -149,6 +164,8 @@ aws ec2 run-instances \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=lll-cadvise-client-$id}]" \
   --profile $awsProfile >"$id/instances.json" || showError "Failed to run the aws command. Check your aws credentials."
 
+showDebugMessage "Finished spinning up client EC2 instance(s)"
+
 clientInstanceIds=$(jq -r '.Instances[].InstanceId' <"$id/instances.json")
 printf '%s ' "${clientInstanceIds[@]}"
 printf "\n"
@@ -175,6 +192,8 @@ config="${configSkeleton/--id--/$id}"
 config="${config/--serverIp--/$serverPrivateIp}"
 config="${config/--QoECalc--/$QoECalc}"
 config="${config/--experimentDuration--/$durationOfExperiment}"
+
+showDebugMessage "Shaping Network"
 
 shaperIndex=0
 networkConfig="{
@@ -219,6 +238,7 @@ for publicIp in "${clientPublicIps[@]}"; do
   showMessage "Waiting for client network interface to be reachable [${players[playerIndex]}]"
   while ! nc -w5 -z "$publicIp" 22; do
     sleep 1
+    showDebugMessage "Still waiting..."
   done
 
   showMessage "Injecting scripts and configurations into client instance"
