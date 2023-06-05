@@ -43,7 +43,7 @@ showDebugMessage() {
 
 cleanExit() {
   showMessage "Killing EC2 instances and clean ups"
-  aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
+  aws ec2 terminate-instances --instance-ids "$clientInstanceIds" "$serverInstanceId" --profile "$awsProfile" &>/dev/null
   rm -rf "$id"
   exit "$1"
 }
@@ -60,14 +60,14 @@ for argument in "$@"; do
     "--shaper")
       nextArgumentIndex=$((argumentIndex + 2))
       networkConfigFileName="${!nextArgumentIndex}"
-      networkConfig=$(cat $networkConfigFileName) || showError "Could not load the network config file"
+      networkConfig=$(cat "$networkConfigFileName") || showError "Could not load the network config file"
       shaperDurations=("$(echo "$networkConfig" | jq '.[].duration')")
-      serverIngresses=($(echo "$networkConfig" | jq '.[].serverIngress'))
-      serverEgresses=($(echo "$networkConfig" | jq '.[].serverEgress'))
-      serverLatencies=($(echo "$networkConfig" | jq '.[].serverLatency'))
-      clientIngresses=($(echo "$networkConfig" | jq '.[].clientIngress'))
-      clientEgresses=($(echo "$networkConfig" | jq '.[].clientEgress'))
-      clientLatencies=($(echo "$networkConfig" | jq '.[].clientLatency'))
+      serverIngresses=("$(echo "$networkConfig" | jq '.[].serverIngress')")
+      serverEgresses=("$(echo "$networkConfig" | jq '.[].serverEgress')")
+      serverLatencies=("$(echo "$networkConfig" | jq '.[].serverLatency')")
+      clientIngresses=("$(echo "$networkConfig" | jq '.[].clientIngress')")
+      clientEgresses=("$(echo "$networkConfig" | jq '.[].clientEgress')")
+      clientLatencies=("$(echo "$networkConfig" | jq '.[].clientLatency')")
       ;;
     "--debug")
       debug=true
@@ -106,9 +106,9 @@ for argument in "$@"; do
           playerQuantity="$(cut -d 'x' -f 1 <<<"$value")"
           playerName="$(cut -d 'x' -f 2- <<<"$value")"
           if [[ " ${players[@]} " =~ " ${playerName} " ]]; then
-            until [ $playerQuantity -lt 1 ]; do
+            until [ "$playerQuantity" -lt 1 ]; do
               newPlayers+=($playerName)
-              let playerQuantity-=1
+              (( playerQuantity-=1 ))
             done
           else
             showError "Invalid player '$value'"
@@ -146,12 +146,12 @@ aws ec2 run-instances \
   --region $instanceRegion \
   --image-id ami-0ab838eeee7f316eb \
   --instance-type $serverInstancesType \
-  --key-name $awsKey \
+  --key-name "$awsKey" \
   --placement "GroupName=$placementGroup,AvailabilityZone=$instanceAvailabilityZone" \
-  --iam-instance-profile Name=$awsIAMRole \
-  --security-groups $awsSecurityGroup \
+  --iam-instance-profile Name="$awsIAMRole" \
+  --security-groups "$awsSecurityGroup" \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=lll-cadvise-server-$id}]" \
-  --profile $awsProfile >"$id/instance.json" || showError "Failed to run the aws command. Check your aws credentials."
+  --profile "$awsProfile" >"$id/instance.json" || showError "Failed to run the aws command. Check your aws credentials."
 
 serverInstanceId=$(jq -r '.Instances[].InstanceId' <"$id/instance.json")
 printf '%s ' "${serverInstanceId[@]}"
@@ -163,12 +163,12 @@ aws ec2 run-instances \
   --image-id ami-0ab838eeee7f316eb \
   --count ${#players[@]} \
   --instance-type $clientInstancesType \
-  --key-name $awsKey \
+  --key-name "$awsKey" \
   --placement "GroupName=$placementGroup,AvailabilityZone=$instanceAvailabilityZone" \
-  --iam-instance-profile Name=$awsIAMRole \
-  --security-groups $awsSecurityGroup \
+  --iam-instance-profile Name="$awsIAMRole" \
+  --security-groups "$awsSecurityGroup" \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=lll-cadvise-client-$id}]" \
-  --profile $awsProfile >"$id/instances.json" || showError "Failed to run the aws command. Check your aws credentials."
+  --profile "$awsProfile" >"$id/instances.json" || showError "Failed to run the aws command. Check your aws credentials."
 
 
 clientInstanceIds=$(jq -r '.Instances[].InstanceId' <"$id/instances.json")
@@ -178,18 +178,18 @@ showDebugMessage "Finished spinning up client EC2 instance(s)"
 
 showMessage "Waiting for instances to be in running state"
 stateCodes=0
-while [ $stateCodes == 0 ] || [ $(($stateCodesSum / ${#stateCodes[@]})) != 16 ]; do
+while [ "$stateCodes" == 0 ] || [ $(("$stateCodesSum" / ${#stateCodes[@]})) != 16 ]; do
   stateCodesSum=0
   sleep 3
-  stateCodes=($(aws ec2 describe-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile | jq '.Reservations[].Instances[].State.Code'))
+  stateCodes=("$(aws ec2 describe-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile | jq '.Reservations[].Instances[].State.Code')")
   for stateCode in "${stateCodes[@]}"; do
     ((stateCodesSum += stateCode))
   done
 done
 echo "all up [$stateCodesSum]"
 
-clientPublicIps=($(aws ec2 describe-instances --instance-ids $clientInstanceIds --profile $awsProfile | jq -r '.Reservations[].Instances[].PublicIpAddress'))
-serverPublicIp=($(aws ec2 describe-instances --instance-ids $serverInstanceId --profile $awsProfile | jq -r '.Reservations[].Instances[].PublicIpAddress'))
+clientPublicIps=("$(aws ec2 describe-instances --instance-ids $clientInstanceIds --profile $awsProfile | jq -r '.Reservations[].Instances[].PublicIpAddress')")
+serverPublicIp=("$(aws ec2 describe-instances --instance-ids $serverInstanceId --profile $awsProfile | jq -r '.Reservations[].Instances[].PublicIpAddress')")
 serverPrivateIp=$(jq -r '.Instances[].PrivateIpAddress' <"$id/instance.json")
 configSkeleton=$(cat configSkeleton.json)
 
@@ -275,7 +275,7 @@ SSMCommandId=$(aws ssm send-command \
   --output-s3-bucket-name "lll-cadvise-output" \
   --output-s3-key-prefix "init/$id" \
   --query "Command.CommandId" \
-  --profile $awsProfile | sed -e 's/^"//' -e 's/"$//')
+  --profile "$awsProfile" | sed -e 's/^"//' -e 's/"$//')
 
 echo "$SSMCommandId"
 
@@ -286,7 +286,7 @@ while [[ $SSMCommandResult == *"InProgress"* ]]; do
   seconds=$((timer % 60))
   printf '\r%s' "~ $minutes:$seconds  "
   if [ $((timer % 5)) == 0 ]; then
-    SSMCommandResult=$(aws ssm list-command-invocations --command-id $SSMCommandId --profile $awsProfile | jq -r '.CommandInvocations[].Status')
+    SSMCommandResult=$(aws ssm list-command-invocations --command-id "$SSMCommandId" --profile "$awsProfile" | jq -r '.CommandInvocations[].Status')
     sleep 0.4
   else
     sleep 1
@@ -308,7 +308,7 @@ SSMCommandId=$(aws ssm send-command \
   --output-s3-bucket-name "lll-cadvise-output" \
   --output-s3-key-prefix "start/$id" \
   --query "Command.CommandId" \
-  --profile $awsProfile | sed -e 's/^"//' -e 's/"$//')
+  --profile "$awsProfile" | sed -e 's/^"//' -e 's/"$//')
 
 echo "$SSMCommandId"
 
@@ -320,7 +320,7 @@ while [[ $SSMCommandResult == *"InProgress"* ]]; do
   seconds=$((timer % 60))
   printf '\r%s' "~ $minutes:$seconds  "
   if [ $((timer % 30)) == 0 ] || [[ $((time - timer)) -gt $time ]]; then
-    SSMCommandResult=$(aws ssm list-command-invocations --command-id $SSMCommandId --profile $awsProfile | jq -r '.CommandInvocations[].Status')
+    SSMCommandResult=$(aws ssm list-command-invocations --command-id "$SSMCommandId" --profile "$awsProfile" | jq -r '.CommandInvocations[].Status')
     sleep 0.4
   else
     sleep 1
