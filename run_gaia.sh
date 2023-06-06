@@ -43,13 +43,15 @@ showDebugMessage() {
 
 cleanExit() {
   showMessage "Killing EC2 instances and clean ups"
-  aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
+  aws ec2 terminate-instances --instance-ids "$clientInstanceIds" "$serverInstanceId" --profile "$awsProfile" &>/dev/null
   rm -rf "$id"
   exit "$1"
 }
 
 # Register cleanExit function to execute on SIGINT
 trap cleanExit 1 SIGINT
+# Register cleanExit function to execute on ERR (in case of unexpected errors)
+trap cleanExit 1 ERR
 
 showDebugMessage "Debug Mode ON"
 
@@ -60,14 +62,14 @@ for argument in "$@"; do
     "--shaper")
       nextArgumentIndex=$((argumentIndex + 2))
       networkConfigFileName="${!nextArgumentIndex}"
-      networkConfig=$(cat $networkConfigFileName) || showError "Could not load the network config file"
+      networkConfig=$(cat "$networkConfigFileName") || showError "Could not load the network config file"
       shaperDurations=("$(echo "$networkConfig" | jq '.[].duration')")
-      serverIngresses=($(echo "$networkConfig" | jq '.[].serverIngress'))
-      serverEgresses=($(echo "$networkConfig" | jq '.[].serverEgress'))
-      serverLatencies=($(echo "$networkConfig" | jq '.[].serverLatency'))
-      clientIngresses=($(echo "$networkConfig" | jq '.[].clientIngress'))
-      clientEgresses=($(echo "$networkConfig" | jq '.[].clientEgress'))
-      clientLatencies=($(echo "$networkConfig" | jq '.[].clientLatency'))
+      serverIngresses=("$(echo "$networkConfig" | jq '.[].serverIngress')")
+      serverEgresses=("$(echo "$networkConfig" | jq '.[].serverEgress')")
+      serverLatencies=("$(echo "$networkConfig" | jq '.[].serverLatency')")
+      clientIngresses=("$(echo "$networkConfig" | jq '.[].clientIngress')")
+      clientEgresses=("$(echo "$networkConfig" | jq '.[].clientEgress')")
+      clientLatencies=("$(echo "$networkConfig" | jq '.[].clientLatency')")
       ;;
     "--debug")
       debug=true
