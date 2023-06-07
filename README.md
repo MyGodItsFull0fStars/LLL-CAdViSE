@@ -6,7 +6,7 @@
   - [Live Low Latency Cloud-based Adaptive Video Streaming Evaluation (LLL-CAdViSE) framework](#live-low-latency-cloud-based-adaptive-video-streaming-evaluation-lll-cadvise-framework)
   - [CLI Setup](#cli-setup)
     - [Installing JQuery](#installing-jquery)
-    - [Installing netcat](#installing-netcat)
+    - [Installing Netcat](#installing-netcat)
   - [AWS Setup](#aws-setup)
     - [AWS Credentials](#aws-credentials)
     - [Run Script Variable](#run-script-variable)
@@ -15,7 +15,7 @@
       - [Security Group](#security-group)
       - [IAM Role](#iam-role)
   - [Running on AWS Cloud](#running-on-aws-cloud)
-    - [Script Flags](#script-flags)
+    - [Run Script Flags](#run-script-flags)
   - [Troubleshoot](#troubleshoot)
     - [Placement Group Unknown](#placement-group-unknown)
     - [Value `groupId` is invalid](#value-groupid-is-invalid)
@@ -58,7 +58,7 @@ This can be done by executing the following command on the EC2 instance:
 sudo yum install jq
 ```
 
-### Installing netcat
+### Installing Netcat
 
 Netcat has to be installed in order to check if the client interfaces are reachable by the server in the experiment.
 
@@ -95,14 +95,15 @@ For this either a placement group with the name `lll-cadvise-cluster` has to be 
 
 The variable `awsSecurityGroup` has to be set to an available security group.
 In case no security group exists, instructions can be found at [Security groups link](https://docs.aws.amazon.com/vpc/latest/userguide/security-groups.html).
+The security group `default` that is predefined by AWS does have the necessary permission and can be used for the instances in the experiment.
 
 #### IAM Role
 
 The value for the variable `awsIAMRole` has to be set.
-The value must be an AWS IAM role that has permissions to access the EC2 service.
+The value must be an AWS IAM role that has permission to access the EC2 service.
 The value to provide in the script is the name of the role that should be used.
 
-How to set up a IAM role can be found at [IAM roles for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
+How to set up an IAM role can be found at [IAM roles for Amazon EC2](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
 
 ## Running on AWS Cloud
 
@@ -124,7 +125,7 @@ The following command executes the `run.sh` script with the given flags.
 - `--cluster`
 
   - The flag `--cluster` defines the placement group used for the experiment.
-  - For further informations regarding placement groups see [Placement Group](#placement-group).
+  - For further information regarding placement groups see [Placement Group](#placement-group).
 - `--awsProfile`
 
   - The flag `--awsProfile` defines the profile used for the experiment.
@@ -151,7 +152,7 @@ The following command executes the `run.sh` script with the given flags.
     - `hlsjsl2a`
     - `hlsjslolp`
   - The number of times a player should be used in the experiment is defined by a prefix of $Nx$ before the player, where $N$ denotes the number of occurrences.
-  - For example `4xdashjs` will result in `dashjs` being executed 4 times in the experiment.
+  - For example, `4xdashjs` will result in `dashjs` being executed 4 times in the experiment.
 
 ## Troubleshoot
 
@@ -182,7 +183,7 @@ An error occurred (InvalidParameterValue) when calling the RunInstances operatio
 ```
 
 1. Ensure that the role that is set as the value for `awsIAMRole` exists,
-2. Check if the role has permissions to execute on EC2 instances.
+2. Check if the role has permission to execute on EC2 instances.
 
 How to set up an IAM role can be found at [source](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/iam-roles-for-amazon-ec2.html#ec2-instance-profile).
 
@@ -211,12 +212,12 @@ Other solutions to this problem can be found at [Troubleshoot Link](https://docs
 
 ### Stuck in Instance Network Reachability Loop
 
-If the script gets stuck when waiting for an EC2 instance network interface being reachable, the cause is likely a misconfiguration in the AWS security group of inbound rules.
+If the script gets stuck when waiting for an EC2 instance network interface to be reachable, the cause is likely a misconfiguration in the AWS security group of inbound rules.
 A possible solution can be found at [Fix Not Being Able to Ping EC2](https://arcadian.cloud/aws/2022/07/01/4-reasons-you-cannot-ping-your-aws-ec2-instance-and-how-to-fix-them/).
 
 ### Injecting Scripts - Identity File Not Accessible
 
-If the error `Warning: Identity file <file-name>.pem not accessible: No such file or directory.` is encountered, this is due to the `.pem` private key being required to be included into the root directory of the LLL-CAdViSE repository.
+If the error `Warning: Identity file <file-name>.pem not accessible: No such file or directory.` is encountered, this is due to the `.pem` private key being required to be included in the root directory of the LLL-CAdViSE repository.
 
 ## Acknowledgement
 
