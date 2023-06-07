@@ -50,8 +50,6 @@ cleanExit() {
 
 # Register cleanExit function to execute on SIGINT
 trap cleanExit 1 SIGINT
-# Register cleanExit function to execute on ERR (in case of unexpected errors)
-# trap cleanExit 1 ERR
 
 showDebugMessage "Debug Mode ON"
 
