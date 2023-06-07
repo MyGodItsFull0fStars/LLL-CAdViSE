@@ -45,7 +45,7 @@ cleanExit() {
   showMessage "Killing EC2 instances and clean ups"
   aws ec2 terminate-instances --instance-ids "$clientInstanceIds" "$serverInstanceId" --profile "$awsProfile" &>/dev/null
   rm -rf "$id"
-  exit "$1"
+  exit $1
 }
 
 # Register cleanExit function to execute on SIGINT
