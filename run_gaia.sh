@@ -233,6 +233,15 @@ config="${config/\"--shapes--\"/$networkConfig}"
 
 showDebugMessage "Shaping network done"
 
+showDebugMessage "Start Prometheus"
+
+python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
+
+docker run \
+    -p 9090:9090 \
+    -v prometheus.yml:/etc/prometheus/prometheus.yml \
+    prom/prometheus
+
 playerIndex=0
 for publicIp in "${clientPublicIps[@]}"; do
   if [[ $playerIndex == 0 ]]; then
