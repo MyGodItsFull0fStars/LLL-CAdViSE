@@ -44,7 +44,7 @@ showDebugMessage() {
 
 cleanExit() {
   showMessage "Killing EC2 instances and clean ups"
-  aws ec2 terminate-instances --instance-ids "$clientInstanceIds" "$serverInstanceId" --profile "$awsProfile" &>/dev/null
+  aws ec2 terminate-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile &>/dev/null
   rm -rf "$id"
   exit $1
 }
@@ -236,15 +236,17 @@ config="${config/\"--shapes--\"/$networkConfig}"
 
 showDebugMessage "Shaping network done"
 
-showDebugMessage "Start Prometheus"
 
 if [[ $monitoring == true ]]; then
+
+  showDebugMessage "Start Prometheus"
   python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
 
   docker run \
     -p 9090:9090 \
     -v prometheus.yml:/etc/prometheus/prometheus.yml \
     prom/prometheus
+
 fi
 
 playerIndex=0
