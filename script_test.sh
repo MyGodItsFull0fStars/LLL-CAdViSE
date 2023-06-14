@@ -5,5 +5,5 @@ docker rm prometheus
 docker run -d \
 --name=prometheus \
 -p 9091:9090 \
--v ~/LLL-CAdViSE/prometheus.yml:/opt/prometheus/prometheus.yml \
+-v ~/LLL-CAdViSE/prometheus_test.yml:/opt/prometheus/prometheus.yml \
 prom/prometheus
