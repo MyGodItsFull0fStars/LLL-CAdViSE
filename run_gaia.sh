@@ -237,18 +237,6 @@ config="${config/\"--shapes--\"/$networkConfig}"
 showDebugMessage "Shaping network done"
 
 
-if [[ $monitoring == true ]]; then
-
-  showDebugMessage "Start Prometheus"
-  python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
-
-  docker run \
-    -p 9090:9090 \
-    -v prometheus.yml:/etc/prometheus/prometheus.yml \
-    prom/prometheus
-
-fi
-
 playerIndex=0
 for publicIp in "${clientPublicIps[@]}"; do
   if [[ $playerIndex == 0 ]]; then
@@ -294,6 +282,17 @@ SSMCommandId=$(aws ssm send-command \
   --profile "$awsProfile" | sed -e 's/^"//' -e 's/"$//')
 
 echo "$SSMCommandId"
+
+if [[ $monitoring == true ]]; then
+
+  showDebugMessage "Start Prometheus"
+  python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
+
+  docker run -d \
+    -p 9090:9090 \
+    -v ~/LLL-CAdViSE/prometheus.yml:/opt/prometheus/prometheus.yml \
+    prom/prometheus
+fi
 
 SSMCommandResult="InProgress"
 timer=0
