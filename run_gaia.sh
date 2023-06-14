@@ -21,6 +21,7 @@ clientWarmupTime=1 #s
 QoECalc=0
 
 debug=false
+monitoring=false
 
 showError() {
   now=$(date -u +"%H:%M:%S")
@@ -37,7 +38,7 @@ showDebugMessage() {
   if [ "$debug" == true ]; then
     message="$1"
     now=$(date -u +"%H:%M:%S")
-    printf "\n\e[1;31m>>> [DEBUG %s] %s\e[0m\n" "$now" "$message"
+    printf "\n\e[1;32m>>> [DEBUG %s] %s\e[0m\n" "$now" "$message"
   fi
 }
 
@@ -71,6 +72,9 @@ for argument in "$@"; do
       ;;
     "--debug")
       debug=true
+      ;;
+    "--monitoring")
+      monitoring=true
       ;;
     "--withQoE")
       QoECalc=1
@@ -170,7 +174,6 @@ aws ec2 run-instances \
   --tag-specifications "ResourceType=instance,Tags=[{Key=Name,Value=lll-cadvise-client-$id}]" \
   --profile "$awsProfile" >"$id/instances.json" || showError "Failed to run the aws command. Check your aws credentials."
 
-
 clientInstanceIds=$(jq -r '.Instances[].InstanceId' <"$id/instances.json")
 printf '%s ' "${clientInstanceIds[@]}"
 printf "\n"
@@ -235,12 +238,14 @@ showDebugMessage "Shaping network done"
 
 showDebugMessage "Start Prometheus"
 
-python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
+if [[ $monitoring == true ]]; then
+  python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
 
-docker run \
+  docker run \
     -p 9090:9090 \
     -v prometheus.yml:/etc/prometheus/prometheus.yml \
     prom/prometheus
+fi
 
 playerIndex=0
 for publicIp in "${clientPublicIps[@]}"; do
