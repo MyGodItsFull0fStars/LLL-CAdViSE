@@ -37,7 +37,7 @@ showDebugMessage() {
   if [ "$debug" == true ]; then
     message="$1"
     now=$(date -u +"%H:%M:%S")
-    printf "\n\e[1;36m>>> [DEBUG %s] %s\e[0m\n" "$now" "$message"
+    printf "\n\e[1;31m>>> [DEBUG %s] %s\e[0m\n" "$now" "$message"
   fi
 }
 
@@ -49,7 +49,7 @@ cleanExit() {
 }
 
 # Register cleanExit function to execute on SIGINT
-trap cleanExit 1 SIGINT
+trap cleanExit SIGINT
 
 showDebugMessage "Debug Mode ON"
 
