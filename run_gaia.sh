@@ -289,7 +289,7 @@ if [[ $monitoring == true ]]; then
   python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
 
   docker run -d \
-    -p 9090:9090 \
+    -p 9090:9091 \
     -v ~/LLL-CAdViSE/prometheus.yml:/opt/prometheus/prometheus.yml \
     prom/prometheus
 fi
