@@ -16,7 +16,7 @@ scrape_configs:
     static_configs:
       - targets: [ '0.0.0.0:9091' ]
 
-  - job_name: 'netdata-aws-instance'
+  - job_name: 'netdata'
 
     metrics_path: '/api/v1/allmetrics'
     params:
