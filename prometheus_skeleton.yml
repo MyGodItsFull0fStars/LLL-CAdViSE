@@ -20,7 +20,7 @@ scrape_configs:
 
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: [ prometheus-client ]
+      format: [ prometheus ]
 
     honor_labels: true
 
@@ -31,7 +31,7 @@ scrape_configs:
 
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: [ prometheus-client ]
+      format: [ prometheus ]
 
     honor_labels: true
 
@@ -42,7 +42,7 @@ scrape_configs:
 
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: [ prometheus-server ]
+      format: [ prometheus ]
     honor_labels: true
 
     static_configs:
