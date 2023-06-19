@@ -6,6 +6,7 @@ import re
 
 NETDATA_SERVER_KEY: str = 'netdata-server'
 NETDATA_CLIENT_KEY: str = 'netdata-client'
+NETDATA_PORT:str = '19999'
 netdata_pattern: str = "\'{your.netdata.ip}:19999\'"
 
 
@@ -30,7 +31,7 @@ def write_file(file_path: str, content: str) -> None:
 
 
 def create_target_string(targets: list[str]) -> str:
-    return ", ".join(f"'{t}'" for t in targets)
+    return ", ".join(f"'{t}:{NETDATA_PORT}'" for t in targets)
 
 
 def get_ips(target_key: str) -> str:
