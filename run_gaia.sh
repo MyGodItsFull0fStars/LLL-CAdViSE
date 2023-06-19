@@ -236,7 +236,6 @@ config="${config/\"--shapes--\"/$networkConfig}"
 
 showDebugMessage "Shaping network done"
 
-
 playerIndex=0
 for publicIp in "${clientPublicIps[@]}"; do
   if [[ $playerIndex == 0 ]]; then
@@ -288,10 +287,14 @@ if [[ $monitoring == true ]]; then
   showDebugMessage "Start Prometheus"
   python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
 
+  docker stop prometheus
+  docker rm prometheus
+
   docker run -d \
     --name=prometheus \
-    -p 9091:9090 \
-    -v ~/LLL-CAdViSE/prometheus.yml:/opt/prometheus/prometheus.yml \
+    --network monitoring \
+    -p 9090:9090 \
+    -v /home/ec2-user/LLL-CAdViSE/prometheus.yml:/etc/prometheus/prometheus.yml \
     prom/prometheus
 fi
 
