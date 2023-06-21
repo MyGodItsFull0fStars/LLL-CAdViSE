@@ -282,22 +282,6 @@ SSMCommandId=$(aws ssm send-command \
 
 echo "$SSMCommandId"
 
-if [[ $monitoring == true ]]; then
-
-  showDebugMessage "Start Prometheus"
-  python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
-
-  docker stop prometheus
-  docker rm prometheus
-
-  docker run -d \
-    --name=prometheus \
-    --network monitoring \
-    -p 9090:9090 \
-    -v /home/ec2-user/LLL-CAdViSE/prometheus.yml:/etc/prometheus/prometheus.yml \
-    prom/prometheus
-fi
-
 SSMCommandResult="InProgress"
 timer=0
 while [[ $SSMCommandResult == *"InProgress"* ]]; do
@@ -316,6 +300,22 @@ printf "\n"
 
 if [[ $SSMCommandResult == *"Failed"* ]]; then
   showError "Failed to initiate the instance(s). Check the S3 bucket for details"
+fi
+
+if [[ $monitoring == true ]]; then
+
+  showDebugMessage "Start Prometheus"
+  python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
+
+  docker stop prometheus
+  docker rm prometheus
+
+  docker run -d \
+    --name=prometheus \
+    --network monitoring \
+    -p 9090:9090 \
+    -v /home/ec2-user/LLL-CAdViSE/prometheus.yml:/etc/prometheus/prometheus.yml \
+    prom/prometheus
 fi
 
 showMessage "Running experiment [+$clientWarmupTime(s) Client warmup time]"
