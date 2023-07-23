@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 MONITORING_NETWORK="monitoring"
-PROMETHEUS_CONFIG_PATH="<path/to/prometheus.yml>"
+PROMETHEUS_CONFIG_PATH="/Users/macbook/Development/LLL-CAdViSE/prometheus.yml"
 
 docker stop netdata
 docker rm netdata
@@ -32,3 +32,12 @@ docker run -d \
     -p 9090:9090 \
     -v $PROMETHEUS_CONFIG_PATH:/etc/prometheus/prometheus.yml \
     prom/prometheus
+
+docker stop grafana
+docker rm grafana
+
+docker run -d \
+    --name=grafana \
+    --network $MONITORING_NETWORK \
+    -p 3000:3000 \
+    grafana/grafana-enterprise

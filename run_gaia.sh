@@ -181,7 +181,7 @@ showDebugMessage "Finished spinning up client EC2 instance(s)"
 
 showMessage "Waiting for instances to be in running state"
 stateCodes=0
-while [ "$stateCodes" == 0 ] || [ $(("$stateCodesSum" / ${#stateCodes[@]})) != 16 ]; do
+while [ "$stateCodes" == 0 ] || [ $(($stateCodesSum / ${#stateCodes[@]})) != 16 ]; do
   stateCodesSum=0
   sleep 3
   stateCodes=($(aws ec2 describe-instances --instance-ids $clientInstanceIds $serverInstanceId --profile $awsProfile | jq '.Reservations[].Instances[].State.Code'))
@@ -307,15 +307,8 @@ if [[ $monitoring == true ]]; then
   showDebugMessage "Start Prometheus"
   python create_prometheus_config.py --client "${clientPublicIps[@]}" --server "${serverPublicIp[@]}"
 
-  docker stop prometheus
-  docker rm prometheus
+  source start_monitoring.sh
 
-  docker run -d \
-    --name=prometheus \
-    --network monitoring \
-    -p 9090:9090 \
-    -v /home/ec2-user/LLL-CAdViSE/prometheus.yml:/etc/prometheus/prometheus.yml \
-    prom/prometheus
 fi
 
 showMessage "Running experiment [+$clientWarmupTime(s) Client warmup time]"

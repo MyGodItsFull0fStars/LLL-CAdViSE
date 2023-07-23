@@ -154,6 +154,28 @@ The following command executes the `run.sh` script with the given flags.
   - The number of times a player should be used in the experiment is defined by a prefix of $Nx$ before the player, where $N$ denotes the number of occurrences.
   - For example, `4xdashjs` will result in `dashjs` being executed 4 times in the experiment.
 
+## Monitoring
+
+In order to run monitoring, the following things have to be done.
+
+### Netdata
+
+The tool [Netdata](https://www.netdata.cloud/) is used for real-time monitoring of each instance 
+
+### Install Docker
+
+Since the monitoring tools Netdata and Prometheus are executed and run inside a Docker container, it is required to install Docker on the resource the experiment is started from in order to gather monitoring data.
+
+### Create Docker Network
+
+In order to use the monitoring, a docker network has to be defined. As default a docker network called `monitoring` is used.
+
+To create this docker network the following command can be used inside a CLI:
+
+`$ docker network create -d bridge monitoring`
+
+If a pre-existing Docker network should be used, then then value of the variable `MONITORING_NETWORK` inside the script `start_monitoring.sh` has to be changed to the network that shall be used instead.
+
 ## Troubleshoot
 
 This section covers common errors encountered when executing LLL-CAdViSE.

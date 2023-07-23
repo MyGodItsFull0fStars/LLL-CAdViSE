@@ -16,23 +16,34 @@ scrape_configs:
     static_configs:
       - targets: [ '0.0.0.0:9090' ]
 
-  - job_name: 'netdata-client'
+  - job_name: 'netdata-aws-instance'
+
+    params:
+      format:
+      - prometheus
+    scrape_interval: 2s
+    scrape_timeout: 1s
+    metrics_path: /api/v1/allmetrics
+    static_configs:
+    - targets: [ 'netdata:19999' ]
+
+  - job_name: 'cadvise-client'
 
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: [ prometheus-client ]
+      format: [ prometheus ]
 
     honor_labels: true
 
     static_configs:
-      - targets: [ '234:223', '1112:334', '43233:2455' ]
+      - targets: [ '18.185.124.108:19999', '3.73.56.142:19999', '52.59.210.206:19999' ]
 
-  - job_name: 'netdata-server'
+  - job_name: 'cadvise-server'
 
     metrics_path: '/api/v1/allmetrics'
     params:
-      format: [ prometheus-server ]
+      format: [ prometheus ]
     honor_labels: true
 
     static_configs:
-      - targets: [ '235:555' ]
+      - targets: [ '52.59.195.233:19999' ]
